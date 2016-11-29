@@ -20,7 +20,7 @@ for reading in curs.fetchall():
 print("Opening Serial Port")
 ser= serial.Serial(PORT, 9600,timeout=1)
 #x=0
-while true:
+while True:
 	re=ser.readline()
 	
 	s=sys.getsizeof(re)
@@ -36,6 +36,13 @@ while true:
 			hs_s=float(l[3])
 			#print(hs_s)
 			print("Current Temp: "+str(cur_temp)+"  Setpoint: "+str(set)+"  HeatSink Temp: "+str(hs_t))
+			try:
+				curs.execute("insert into office_temp values(current_date(),now(),?,?,?)",(str(cur_temp),str(hs_t),str(set)))
+				db.commit()
+			except:
+				print("Error: Rolling Back")
+				db.rollback()
+				print(sys.exc_info())
 	#x=x+1
 
 
