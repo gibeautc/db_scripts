@@ -1,5 +1,11 @@
 #!/usr/bin/env python
 import MySQLdb
+import serial
+#import math
+#import time
+import sys
+PORT='/dev/ttyACM0'
+ser= serial.Serial(PORT, 9600,timeout=1)
 
 db=MySQLdb.connect("localhost","auto","myvice12","main")
 curs=db.cursor()
@@ -9,6 +15,16 @@ curs.execute("select * from office_temp")
 
 for reading in curs.fetchall():
 	print(str(reading[0])+"  "+str(reading[1])+"  "+str(reading[2])+"  "+str(reading[3]))
+
+
+print("Opening Serial Port")
+ser= serial.Serial(PORT, 9600,timeout=1)
+x=0
+while x<10000:
+	re=ser.readline()
+	print(sizeof(re))
+	x=x+1
+
 
 print("Closing Database and exiting")
 db.close()
