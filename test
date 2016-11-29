@@ -19,11 +19,24 @@ for reading in curs.fetchall():
 
 print("Opening Serial Port")
 ser= serial.Serial(PORT, 9600,timeout=1)
-x=0
-while x<10000:
+#x=0
+while true:
 	re=ser.readline()
-	print(sizeof(re))
-	x=x+1
+	
+	s=sys.getsizeof(re)
+	if s>25:
+		#print(re)
+		l=re.split(',')
+		#print(l)
+		if len(l)==4:
+			cur_temp=float(l[0])
+			#print(cur_temp)
+			set=float(l[1])
+			hs_t=float(l[2])
+			hs_s=float(l[3])
+			#print(hs_s)
+			print("Current Temp: "+str(cur_temp)+"  Setpoint: "+str(set)+"  HeatSink Temp: "+str(hs_t))
+	#x=x+1
 
 
 print("Closing Database and exiting")
