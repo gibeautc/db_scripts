@@ -1,8 +1,6 @@
 #!/usr/bin/env python
 import MySQLdb
 import serial
-#import math
-#import time
 import sys
 PORT='/dev/ttyACM0'
 ser= serial.Serial(PORT, 9600,timeout=1)
@@ -14,37 +12,31 @@ print("Printing table office_temp")
 curs.execute("select * from office_temp")
 
 for reading in curs.fetchall():
-	print(str(reading[0])+"  "+str(reading[1])+"  "+str(reading[2])+"  "+str(reading[3]))
+	print(str(reading[0])+"  "+str(reading[1])+"  "+str(reading[2])+"  "+str(reading[3])+"  "+str(reading[4]))
 
 
 print("Opening Serial Port")
 ser= serial.Serial(PORT, 9600,timeout=1)
-#x=0
 while True:
 	re=ser.readline()
-	
 	s=sys.getsizeof(re)
 	if s>25:
-		#print(re)
 		l=re.split(',')
-		#print(l)
 		if len(l)==4:
 			cur_temp=float(l[0])
-			#print(cur_temp)
-			set_p=double(l[1])
-			hs_t=double(l[2])
-			hs_s=double(l[3])
-			#print(hs_s)
+			set_p=float(l[1])
+			hs_t=float(l[2])
+			hs_s=float(l[3])
+			data=[cur_temp,hs_t,set_p]
 			print("Current Temp: "+str(cur_temp)+"  Setpoint: "+str(set_p)+"  HeatSink Temp: "+str(hs_t))
 			try:
-				curs.execute('insert into office_temp values(current_date(),now(),?,?,?)',(cur_temp,hs_t,set_p))
+				#curs.execute('insert into data office_temp values(?,?,?,?,?)')
+				curs.execute('insert into office_temp (tdate,ttime,temp,hs_temp,set_point) values(current_date(),now(),%s,%s,%s)',data)
 				db.commit()
 			except:
 				print("Error: Rolling Back")
 				db.rollback()
 				print(sys.exc_info())
-	#x=x+1
-
-
+	
 print("Closing Database and exiting")
 db.close()
