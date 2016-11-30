@@ -2,7 +2,7 @@
 import MySQLdb
 import serial
 import sys
-PORT='/dev/ttyACM0'
+PORT='/dev/ttyACM1'
 ser= serial.Serial(PORT, 9600,timeout=1)
 
 db=MySQLdb.connect("localhost","auto","myvice12","main")
@@ -27,7 +27,7 @@ while True:
 			set_p=float(l[1])
 			hs_t=float(l[2])
 			hs_s=float(l[3])
-			data=[cur_temp,hs_t,set_p]
+			data=[str(cur_temp),str(hs_t),str(set_p)]
 			print("Current Temp: "+str(cur_temp)+"  Setpoint: "+str(set_p)+"  HeatSink Temp: "+str(hs_t))
 			try:
 				#curs.execute('insert into data office_temp values(?,?,?,?,?)')
