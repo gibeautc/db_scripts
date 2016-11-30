@@ -1,0 +1,35 @@
+#!/usr/bin/env python
+import MySQLdb
+import serial
+import sys
+PORT='/dev/ttyACM1'
+ser= serial.Serial(PORT, 9600,timeout=1)
+
+db=MySQLdb.connect("localhost","auto","myvice12","main")
+curs=db.cursor()
+print("Database main selected")
+print("Opening Serial Port")
+ser= serial.Serial(PORT, 9600,timeout=1)
+while True:
+	re=ser.readline()
+	s=sys.getsizeof(re)
+	if s>25:
+		l=re.split(',')
+		if len(l)==4:
+			cur_temp=float(l[0])
+			set_p=float(l[1])
+			hs_t=float(l[2])
+			hs_s=float(l[3])
+			data=[str(cur_temp),str(hs_t),str(set_p)]
+			print("Current Temp: "+str(cur_temp)+"  Setpoint: "+str(set_p)+"  HeatSink Temp: "+str(hs_t))
+			try:
+				#curs.execute('insert into data office_temp values(?,?,?,?,?)')
+				curs.execute('insert into office_temp (tdate,ttime,temp,hs_temp,set_point) values(current_date(),now(),%s,%s,%s)',data)
+				db.commit()
+			except:
+				print("Error: Rolling Back")
+				db.rollback()
+				print(sys.exc_info())
+	
+print("Closing Database and exiting")
+db.close()
