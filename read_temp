@@ -2,16 +2,43 @@
 import MySQLdb
 import sys
 
+if len(sys.argv)<2:
+	print("no argument given....idiot")
+	exit()
 
 db=MySQLdb.connect("localhost","auto","myvice12","main")
 curs=db.cursor()
 print("Database main selected")
-print("Printing table office_temp")
-curs.execute("select * from office_temp where tdate=current_date()")
+if str(sys.argv[1])=='cur':
+	#current temp
+	print("\n\n")
+	curs.execute("select * from office_temp where tdate=current_date()")
+	s=curs.fetchall()
+	a=len(s)
+	#print(a)
+	reading=s[a-1]
+	#print(str(reading[0])+"  "+str(reading[1])+"  "+str(reading[2])+"  "+str(reading[3])+"  "+str(reading[4]))
+	print("Office Temp: "+str(reading[2])+"   Set at: "+str(reading[4]))
+	print("Heat Sink Temp: "+str(reading[3]))
+	print("\n\n")
+elif str(sys.argv[1])=='today':
+	print("Todays Stats")
+	curs.execute("select * from office_temp where tdate=current_date()")
+	s=curs.fetchall()
+	a=len(s)
+	print("There are "+str(a)+" entrys today")
+	curs.execute("select max(temp) from office_temp where tdate=current_date()")
+	s=curs.fetchall()
+	print("max temp: "+str(s[0][0]))
+	curs.execute("select min(temp) from office_temp where tdate=current_date()")
+	s=curs.fetchall()
+	print("min temp: "+str(s[0][0]))
+	curs.execute("select max(hs_temp) from office_temp where tdate=current_date()")
+	s=curs.fetchall()
+	print("max heat sink temp: "+str(s[0][0]))
 
-for reading in curs.fetchall():
-	print(str(reading[0])+"  "+str(reading[1])+"  "+str(reading[2])+"  "+str(reading[3])+"  "+str(reading[4]))
-
+else:
+	print("Not A vallid option")
 
 print("Closing Database and exiting")
 db.close()
