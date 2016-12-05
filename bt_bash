@@ -1,0 +1,5 @@
+#!/bin/bash
+hcitool scan
+#echo 'Scanning ...'
+#echo '1'
+#echo '1'

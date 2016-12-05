@@ -1,0 +1,43 @@
+#!/usr/bin/env python
+import MySQLdb
+import sys
+import subprocess
+db=MySQLdb.connect("localhost","auto","myvice12","BT")
+curs=db.cursor()
+print("Database BT selected")
+
+
+#read input  (should be 0,1,multiple lines--not sure if that will come in as string or what...)
+#break into multiple codes, add to raw_bt table with date,time and location(at some point)
+
+
+#another process will be monitoring the raw table, if values are present, it will read that line,
+#check if that number is already in full table, and add the occurance to the sub table for that device
+#if it is not in the full table, a new sub table will be made for that device
+while True:
+	try:
+		#print("Read BT")
+		scan= subprocess.Popen("./bt_bash",shell=True,stdout=subprocess.PIPE).stdout.read()
+		#print(scan)
+		#print("Size: "+str(len(scan)))
+		scan_list=scan.split('\n')
+		#print("Size: "+str(len(scan_list)))
+		if len(scan_list)<3:
+			print("No BT Devices Found")
+		else:
+			print("Found "+str(len(scan_list)-2)+" Devices")
+			#number of devices is len(scan_list)-2
+			#curs.execute('insert into office_temp (tdate,ttime,temp,hs_temp,set_point) values(current_date(),now(),%s,%s,%s)',data)
+			#db.commit()
+		wifi_scan=subprocess.Popen("iwlist wlan0 scan | grep Address",shell=True,stdout=subprocess.PIPE).stdout.read()
+		wifi_list=wifi_scan.split('\n')
+		print("Number of Wifi signals: "+str(len(wifi_list)))
+		print(wifi_list)
+		print("\n")
+	except:
+		print("Error: Rolling Back")
+		db.rollback()
+		print(sys.exc_info())	
+
+print("Closing Database and exiting")
+db.close()

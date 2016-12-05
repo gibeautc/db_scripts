@@ -1,0 +1,10 @@
+raw table name-BT_Raw
+	tdate,ttime,bt_ID,lat,long
+
+full table name-BT_main
+	bt_ID,bt_Index  maybe 'last seen' or number of times seen
+
+Each sub table will be named "BT_xxxxxxx" where the xxxxxx will be the Index used in BT_main
+
+
+
